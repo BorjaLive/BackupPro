@@ -1,0 +1,59 @@
+body{
+    background-color: #252525;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header{
+    -webkit-app-region: drag;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1041;
+}
+
+header span{
+    color: #252525;
+    margin-left: 1rem;
+    font-size: 1.1rem;
+}
+
+#headerButtonGroup{
+    display: flex;
+    flex-direction: row;
+    font-size: 1rem;
+}
+
+.redHeaderBtn{
+    -webkit-app-region: no-drag;
+    color: #151515;
+    padding: .4rem .8rem .4rem .8rem;
+    font-size: 1.4rem;
+}
+.redHeaderBtn:hover{
+    color: #ffffff;
+    background-color: #e95a40;
+}
+.grayHeaderBtn{
+    -webkit-app-region: no-drag;
+    color: #151515;
+    padding: .6rem 1rem .6rem 1rem;
+}
+.grayHeaderBtn:hover{
+    color: #ffffff;
+    background-color: #212121;
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
