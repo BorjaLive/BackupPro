@@ -102,9 +102,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     var elementsDiv = document.getElementById("elementsDiv");
     function drawElement(element) {
-        let mainDiv = newElement("li", "list-group-item d-flex flex-row justify-content-between align-items-center p-1");
+        let mainDiv = newElement("li", "list-group-item d-flex flex-column justify-content-center align-items-stretch p-1");
 
-        mainDiv.append(newElement("span", "unselectable", element.name));
+        let mainLine = newElement("div", "d-flex flex-row justify-content-between align-items-center");
+        mainLine.append(newElement("span", "unselectable", element.name));
         let deleteBtn = newElement("button", "btn btn-sm btn-outline-danger");
         deleteBtn.append(newElement("i", "fas fa-times"));
         deleteBtn.addEventListener("click", () => {
@@ -112,8 +113,9 @@ window.addEventListener('DOMContentLoaded', () => {
             elementsDiv.removeChild(mainDiv);
             saveElements();
         });
-        mainDiv.append(deleteBtn);
+        mainLine.append(deleteBtn);
 
+        mainDiv.append(mainLine);
         elementsDiv.append(mainDiv);
     }
     function addNewElement(element) {
@@ -128,11 +130,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //Boton subir
     var backupBtn = document.getElementById("backupBtn");
+    function stopLoading(){
+        disableAllBtn(false);
+        backupBtn.removeChild(backupBtn.firstChild);
+    }
     backupBtn.addEventListener("click", () => {
         disableAllBtn(true);
         backupBtn.insertBefore(newElement("i", "fas fa-sync-alt fa-spin me-2"), backupBtn.firstChild);
 
-        fs.mkdtemp(path.join(os.tmpdir(), 'backuppro-'), (err, tmpDir) => {
+        fs.mkdtemp(path.join(os.tmpdir(), 'backuppro-'), (error, tmpDir) => {
+            if(error){
+                showMSG("Error inesperado", "No se ha podido obtener una carpeta temporal", error);
+                return;
+            }
             console.log(tmpDir);
 
             //Probar la conexion y crear la carpeta o vaciarla
@@ -152,10 +162,18 @@ window.addEventListener('DOMContentLoaded', () => {
             }).then(data => {
                 return conn.mkdir(remoteDir, true);
             }).then(data => {
-                //conn.end();
-
                 //Comprimir cada elemento
                 elements.forEach((element, i) => {
+                    //Mostrar un progreso, en principio indefinido
+                    let progressLine = newElement("div", "d-flex flex-row justify-content-between align-items-center");
+                    let progressIcon = newElement("i", "fas fa-file-archive fs-3 me-2");
+                    let progressBar = newElement("progress", "w-100");
+                    progressBar.max = 100;
+                    progressBar.min = 0;
+                    progressLine.append(progressIcon);
+                    progressLine.append(progressBar);
+                    elementsDiv.children.item(i).append(progressLine);
+
                     let zipFile = path.join(tmpDir, element.name.replace(" ", "_") + ".zip");
                     let output = fs.createWriteStream(zipFile);
                     let archive = archiver('zip', { store: true });
@@ -163,20 +181,38 @@ window.addEventListener('DOMContentLoaded', () => {
 
                     output.on('close', function () {
                         //Subir el fichero comprimido
-                        console.log("Subir:", zipFile, archive.pointer(), remoteDir);
+                        if(updateInterval != null) clearInterval(updateInterval);
+                        progressIcon.classList.remove("fa-file-archive");
+                        progressIcon.classList.add("fa-upload");
+                        progressBar.value = 0;
 
                         const progressStream = progress({length: archive.pointer(), time: 100});
                         progressStream.on('progress', (progress) => {
-                            console.log(" [" + path.basename(zipFile) + "] uploaded [" + progress.percentage.toFixed(2) + "%]");
+                            progressBar.value = progress.percentage;
                         });
                         const outStream = fs.createReadStream(zipFile);
                         outStream.pipe(progressStream);
                         
                         conn.put(progressStream, remoteDir+"/"+path.basename(zipFile))
-                        .then(res => console.log("Subido", res))
-                        .catch(error => console.log("error al subir", error));
+                        .then(res => {
+                            //Borrar la barra de progreso y el archivo comprimido
+                            fs.unlinkSync(zipFile);
+                            progressLine.parentElement.removeChild(progressLine);
+                            //Si no hay más procesos pendientes, se ha terminado la copia
+                            if(document.querySelectorAll("progress").length == 0){
+                                stopLoading();
+                                fs.rmdirSync(tmpDir);
+                                conn.end();
+                            }
+                        })
+                        .catch(error => {
+                            showMSG("Error al subir fichero", "No se ha podido subir el fichero. Revisa los permisos, quotas y espacio disponible.");
+                            stopLoading();
+                            console.log("Error al conectar subir fichero", error);
+                        });
                     });
 
+                    let updateInterval = null;
                     switch (element.type) {
                         case "db":
                             let command = `${element.data.bin} -u ${element.data.user} ${element.data.pass == "" ? "" : `-p${element.data.pass}`} --all-databases`;
@@ -186,24 +222,18 @@ window.addEventListener('DOMContentLoaded', () => {
                         case "dir":
                             fastFolderSize(element.data, (error, bytes) => {
                                 if (error) throw error;
-                                let progressInterval = setInterval(() => {
-                                    let percent = archive.pointer()/bytes;
-                                    console.log("Comprimiendo", percent);
-                                    if(percent > 0.99){
-                                        clearInterval(progressInterval);
-                                    }
+                                updateInterval = setInterval(() => {
+                                    let percent = (archive.pointer()/bytes)*100;
+                                    progressBar.value = percent;
                                 }, 100);
                               });
                             archive.directory(element.data, false);
                             break;
                         case "file":
                             let fileSize = fs.statSync(element.data).size;
-                            let progressInterval = setInterval(() => {
-                                let percent = archive.pointer()/fileSize;
-                                console.log("Comprimiendo", percent);
-                                if(percent > 0.99){
-                                    clearInterval(progressInterval);
-                                }
+                            updateInterval = setInterval(() => {
+                                let percent = (archive.pointer()/fileSize)*100;
+                                progressBar.value = percent;
                             }, 100);
                             archive.file(element.data, { name: path.basename(element.data) });
                             break;
@@ -211,14 +241,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
                     archive.finalize();
                 });
-
-            }).catch(err => {
-                console.log(err, 'catch error');
+            }).catch(error => {
+                showMSG("Error al conectar con SFTP", "No se ha podido conectar con el servidor SFTP. Revisa las credenciales y los permisos.");
+                stopLoading();
+                console.log("Error al conectar con SFTP", error);
             });
-
-
-
-            //fs.rmSync(tmpDir, { recursive: true, force: true });
         });
 
         //Guardar los datos de conexion
@@ -229,10 +256,25 @@ window.addEventListener('DOMContentLoaded', () => {
             pass: confSftpPass.value,
             dir: confSftpDir.value
         });
-
-        disableAllBtn(false);
-        backupBtn.removeChild(backupBtn.firstChild);
+        
     });
+
+
+    var modalMSGshowBtn = document.getElementById("modalMSGshowBtn");
+    var modalMSGtitle = document.getElementById("modalMSGtitle");
+    var modalMSGbody = document.getElementById("modalMSGbody");
+    var modalMSGarea = document.getElementById("modalMSGarea");
+    function showMSG(title, body, area = null){
+        modalMSGtitle.innerText = title;
+        modalMSGbody.innerText = body;
+        if(area !== null){
+            modalMSGarea.classList.remove("visually-hidden");
+            modalMSGarea.value = area;
+        }else{
+            modalMSGarea.classList.add("visually-hidden");
+        }
+        modalMSGshowBtn.click();
+    }
 
 });
 

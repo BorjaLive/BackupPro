@@ -8,7 +8,7 @@ function createWindow () {
         height: 800,
         webPreferences: {
             enableRemoteModule: true,
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'src/preload.js')
         },
         frame:false,
         autoHideMenuBar: true
@@ -32,7 +32,7 @@ function createWindow () {
     ipcMain.handle('select-dir', async (event, arg) => {
         return dialog.showOpenDialog({ properties: ['openDirectory'] });
     });
-    win.loadFile('index.html');
+    win.loadFile('src/index.html');
     win.webContents.openDevTools();
 }
 
