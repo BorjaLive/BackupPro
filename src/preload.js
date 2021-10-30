@@ -10,7 +10,7 @@ const progress = require('progress-stream');
 const fastFolderSize = require('fast-folder-size');
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await storage.init();
+    await storage.init({dir: (process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share"))});
     let conn = new SFTP();
 
     var gotoUploadBtn = document.getElementById("gotoUploadBtn");

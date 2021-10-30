@@ -3,9 +3,9 @@
 ; -------------------------------
 ; Start
  
-  !define MUI_PRODUCT "BackupPro 0.2.1"
+  !define MUI_PRODUCT "BackupPro 0.2.2"
   !define MUI_FILE "BackupPro"
-  !define MUI_BRANDINGTEXT "BackupPro Ver. 0.2.1"
+  !define MUI_BRANDINGTEXT "BackupPro Ver. 0.2.2"
   CRCCheck On
  
   ; We should test if we must use an absolute path 
