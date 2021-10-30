@@ -275,9 +275,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
             //Cargar los datos de SFTP
             var confSftp = await storage.get("sftp");
-            if (confSftp == null) {
-                showMSG("No hay datos de conexion", "No se han encontrado datos guardados para la realizar la conexión.");
-            }
 
             //Cargar los datos de limpiado
             var confClearMonth = document.getElementById("confClearMonth");
@@ -315,6 +312,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 limpiarBtn.removeChild(limpiarBtn.firstChild);
             }
             function actualizar() {
+                if(confSftp == null) return;
                 disableAllBtn(true);
                 actualizarBtn.insertBefore(newElement("i", "fas fa-sync-alt fa-spin me-2"), actualizarBtn.firstChild);
 
@@ -451,6 +449,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 });
             }
             function limpiar() {
+                if(confSftp == null) return;
                 disableAllBtn(true);
                 limpiarBtn.insertBefore(newElement("i", "fas fa-sync-alt fa-spin me-2"), limpiarBtn.firstChild);
 

@@ -5,7 +5,7 @@ const fs = require('fs');
 function createWindow () {
     const loading = new BrowserWindow({show: false, frame: false});
     const win = new BrowserWindow({
-        width: 1000,
+        width: 600,
         height: 800,
         webPreferences: {
             enableRemoteModule: true,
@@ -43,7 +43,7 @@ function createWindow () {
         return dialog.showOpenDialog({ properties: ['openDirectory'] });
     });
     win.loadFile('src/index.html');
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {

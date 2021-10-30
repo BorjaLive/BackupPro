@@ -1,6 +1,6 @@
 {
   "name": "backuppro",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "BackupPro",
   "main": "main.js",
   "scripts": {
