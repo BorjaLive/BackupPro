@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 function createWindow () {
+    const loading = new BrowserWindow({show: false, frame: false});
     const win = new BrowserWindow({
         width: 1000,
         height: 800,
@@ -11,8 +12,17 @@ function createWindow () {
             preload: path.join(__dirname, 'src/preload.js')
         },
         frame:false,
-        autoHideMenuBar: true
-    })
+        autoHideMenuBar: true,
+        show: false
+    });
+
+    win.webContents.once("dom-ready", () => {
+        win.show();
+        loading.hide();
+        loading.close();
+    });
+    loading.loadURL('src/loding.html');
+    //loading.show();
 
     win.on('page-title-updated', function(e) {
         e.preventDefault();

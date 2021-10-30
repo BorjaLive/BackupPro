@@ -48,6 +48,23 @@ header span{
     color: #ffffff;
     background-color: #212121;
 }
+.grayHeaderLocation{
+    -webkit-app-region: no-drag;
+    color: white;
+    background-color: gray;
+    padding: .5rem 1rem .5rem 1rem;
+    margin-left: .5rem;
+    margin-top: .2rem;
+    border-top-left-radius: 25%;
+    border-top-right-radius: 25%;
+    align-self: flex-end;
+}
+.grayHeaderLocation:hover{
+    background-color: #151515;
+}
+.grayHeaderLocation.selected{
+    background-color: #151515;
+}
 
 .unselectable {
     -webkit-touch-callout: none;

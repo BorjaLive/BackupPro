@@ -15,135 +15,18 @@
 
 <body>
     <header>
-        <span>Backup Pro</span>
+        <div id="headerLocation">
+            <a id="gotoUploadBtn"><i class="fas fa-upload grayHeaderLocation"></i></a>
+            <a id="gotoConfigBtn"><i class="fas fa-hdd grayHeaderLocation"></i></a>
+            <span>Backup Pro</span>
+        </div>
         <div id="headerButtonGroup">
             <i class="fas fa-window-minimize grayHeaderBtn" id="headerMinimiceBtn"></i>
             <i class="fas fa-window-maximize grayHeaderBtn" id="headerMaximiceBtn"></i>
             <i class="fas fa-times redHeaderBtn" id="headerCloseBtn"></i>
         </div>
     </header>
-    <div class="d-flex flex-column justify-content-stretch flex-grow-1 p-3 text-light">
-        <div class="display-flex flex-column justify-content-start border border-secondary p-1">
-            <h5>Conexión SFTP</h5>
-            <div class="d-flex flex-row flex-wrap justify-content-between align-items-center">
-                <div class="col-8 col-sm-4 p-1">
-                    <label for="confSftpHost" class="form-label">Host</label>
-                    <input type="text" class="form-control" id="confSftpHost">
-                </div>
-                <div class="col-4 col-sm-2 p-1">
-                    <label for="confSftpPort" class="form-label">Puerto</label>
-                    <input type="text" class="form-control" id="confSftpPort">
-                </div>
-                <div class="col-6 col-sm-3 p-1">
-                    <label for="confSftpUser" class="form-label">Usuario</label>
-                    <input type="text" class="form-control" id="confSftpUser">
-                </div>
-                <div class="col-6 col-sm-3 p-1">
-                    <label for="confSftpPass" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="confSftpPass">
-                </div>
-                <div class="col-12 p-1">
-                    <label for="confSftpDir" class="form-label">Directorio remoto</label>
-                    <input type="text" class="form-control" id="confSftpDir">
-                </div>
-            </div>
-        </div>
-        <div class="display-flex flex-column justify-content-start border border-secondary flex-grow-1 p-1 my-2">
-            <h5>Elementos a copiar</h5>
-            <ul class="list-group flex-fill" id="elementsDiv">
-            </ul>
-        </div>
-        <div class="d-flex flex-row justify-content-between align-items-center p-1">
-            <div class="d-flex flex-row flex-wrap justify-content-center">
-                <button type="button" class="btn btn-outline-light my-1" data-bs-toggle="modal" data-bs-target="#modalAddBD">Agregar BD</button>
-                <button type="button" class="btn btn-outline-light mx-2 my-1" data-bs-toggle="modal" data-bs-target="#modalAddFolder">Agregar Carpeta</button>
-                <button type="button" class="btn btn-outline-light my-1" data-bs-toggle="modal" data-bs-target="#modalAddFile">Agregar Archivo</button>
-            </div>
-            <div class="d-flex flex-grow-1 justify-content-end">
-                <button type="button" class="btn btn-outline-success btn-lg" id="backupBtn"><span>Backup</span></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" tabindex="-1" id="modalAddBD">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar BD</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="modalBDname" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="modalBDname">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalBDfile" class="form-label">Binario de mysqldump</label>
-                        <input class="form-control" type="file" id="modalBDfile">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalBDuser" class="form-label">Usuario</label>
-                        <input type="text" class="form-control" id="modalBDuser">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalBDpass" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="modalBDpass">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="modalBDbtn">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" tabindex="-1" id="modalAddFolder">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar carpeta</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="modalFolderName" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="modalFolderName">
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="modalFolderFolder">
-                        <button class="btn btn-outline-secondary" type="button" id="modalFolderFolderBtn">Seleccionar</button>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="modalFolderBtn">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" tabindex="-1" id="modalAddFile">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar fichero</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="modalFileName" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="modalFileName">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalFileFile" class="form-label">Fichero</label>
-                        <input class="form-control" type="file" id="modalFileFile">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" id="modalFileBtn">Agregar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="d-flex flex-column justify-content-stretch flex-grow-1" id="contentDiv"></div>
 
     <div class="modal fade" tabindex="-1" id="modalMSG">
         <div class="modal-dialog modal-dialog-centered">
@@ -162,7 +45,8 @@
             </div>
         </div>
     </div>
-    <button type="button" class="visually-hidden" data-bs-toggle="modal" data-bs-target="#modalMSG" id="modalMSGshowBtn"></button>
+    <button type="button" class="visually-hidden" data-bs-toggle="modal" data-bs-target="#modalMSG"
+        id="modalMSGshowBtn"></button>
 </body>
 
 </html>
